@@ -15,16 +15,37 @@ export default class App extends React.Component {
     //debugger//using debuggers for breakpoints to make sure that your code is working as intended and will break where you place debugger.
     this.setState({...this.state, todoNameInput: value })//see note above about putting value in
   }
-  //helper function for fetching all todos:
+  //resetting the form to empty after typing in it.
+  resetForm = () => this.setState({ ...this.state, todoNameInput: ''})
+
+  //posting todos helper function with axios
+  postNewTodo = () =>{
+    axios.post(URL, {name: this.state.todoNameInput})
+    .then(res => {
+      this.setState({ ...this.state, todos: this.state.todos.concat(res.data.data)})
+      this.resetForm();
+      //debugger
+    })
+    .catch(err => {
+      //debugger
+      this.setState({ ...this.state, error: err.response.data.message})
+    })
+  }
+  //helper to post on submit button
+  onTodoFormSubmit = evt =>{
+    evt.preventDefault()//to keep the page from refreshing each time that we click the submit button
+    this.postNewTodo() //see how clean this is compared to trying to put it all together in one?
+  }
+  //helper function for fetching all todos with axios:
   fetchAllTodos = () =>{
     axios.get(URL)
     .then(res =>{
       //debugger
-      this.setState({  ...this, todos: res.data.data})//make sure that the data is being send correctly
+      this.setState({  ...this.state, todos: res.data.data})//make sure that the data is being send correctly
     })
     .catch(err =>{
       //debugger
-      this.setState({ ...this, error: err.response.data.message})
+      this.setState({ ...this.state, error: err.response.data.message})
     })
 
   }
@@ -45,7 +66,7 @@ export default class App extends React.Component {
             })
             }
         </div>
-        <form id="todoForm">
+        <form id="todoForm" onSubmit={this.onTodoFormSubmit}>
           <input value={this.state.todoNameInput} onChange={this.onTodoNameInputChange} type="text" placeholder="Type your todo here"></input>
           <input type="submit"></input>
           <button>Clear Completed</button>
