@@ -6,6 +6,7 @@ const URL = 'http://localhost:9000/api/todos'//ease of use for later
 export default class App extends React.Component {
   state={
     todos: [],//initialize state with empty array of todos then GET the todos
+    error: '',//create state for error
   }
   //helper function for fetching all todos:
   fetchAllTodos = () =>{
@@ -15,7 +16,8 @@ export default class App extends React.Component {
       this.setState({  ...this, todos: res.data.data})//make sure that the data is being send correctly
     })
     .catch(err =>{
-      debugger
+      //debugger
+      this.setState({ ...this, error: err.response.data.message})
     })
 
   }
@@ -27,7 +29,7 @@ export default class App extends React.Component {
   render() {
     return  (
       <div>
-        <div id="error">Error: no errors here</div>
+        <div id="error">{this.state.error}</div>
         <div id="todos">
           <h2>Todos:</h2>
           {
