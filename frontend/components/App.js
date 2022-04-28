@@ -1,19 +1,40 @@
+import axios from 'axios'
 import React from 'react'
 
-const URL = 'http://localhost:9000/api/todos'
+const URL = 'http://localhost:9000/api/todos'//ease of use for later
 
 export default class App extends React.Component {
   state={
     todos: [],//initialize state with empty array of todos then GET the todos
   }
+  //helper function for fetching all todos:
+  fetchAllTodos = () =>{
+    axios.get(URL)
+    .then(res =>{
+      //debugger
+      this.setState({  ...this, todos: res.data.data})//make sure that the data is being send correctly
+    })
+    .catch(err =>{
+      debugger
+    })
+
+  }
+  
+    componentDidMount(){
+    //fetch all todos from server
+    this.fetchAllTodos()
+  }
   render() {
-    return (
+    return  (
       <div>
         <div id="error">Error: no errors here</div>
         <div id="todos">
           <h2>Todos:</h2>
-          <div>Walk the dog</div>
-          <div>Learn React</div>
+          {
+            this.state.todos.map(td => {
+              return <div key={td.id}>{td.name}</div>
+            })
+            }
         </div>
         <form id="todoForm">
           <input type="text" placeholder="Type your todo here"></input>
